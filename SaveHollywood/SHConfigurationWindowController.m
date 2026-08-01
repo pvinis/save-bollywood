@@ -21,6 +21,7 @@
 #import "SHUserDefaults+Constants.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "SHSlider.h"
 #import "SHAssetTableCellView.h"
@@ -178,7 +179,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     
     // Register for D&D
     
-    [_assetsTableView registerForDraggedTypes:@[SHPasteboardTypeSelectedRows,NSFilenamesPboardType]];
+    [_assetsTableView registerForDraggedTypes:@[SHPasteboardTypeSelectedRows,NSPasteboardTypeFileURL]];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(shouldShowValueLabel:)
@@ -212,13 +213,13 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     
     BOOL tBool=[tDefaults boolForKey:SHUserDefaultsAssetsRandomOrder];
     
-    [_randomOrderCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_randomOrderCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
         // Start where left off
     
     tBool=[tDefaults boolForKey:SHUserDefaultsAssetsStartWhereLeftOff];
     
-    [_resumePlayingCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_resumePlayingCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
         // List
     
@@ -257,19 +258,19 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     
     tBool=[tDefaults boolForKey:SHUserDefaultsFrameRandomPosition];
     
-    [_frameRandomPositionCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_frameRandomPositionCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
         // Draw Border
     
     tBool=[tDefaults boolForKey:SHUserDefaultsFrameDrawBorder];
     
-    [_frameDrawBorderCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_frameDrawBorderCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
         // Show Metadata
     
     tBool=[tDefaults boolForKey:SHUserDefaultsFrameShowMetadata];
     
-    [_frameShowMetatadaCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_frameShowMetatadaCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
     [_frameShowMetatadaModeMatrix setEnabled:tBool];
     
@@ -306,7 +307,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     
     tBool=[tDefaults boolForKey:SHUserDefaultsAudioMainDisplayOnly];
     
-    [_audioMainScreenCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_audioMainScreenCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
     // Volume
     
@@ -339,7 +340,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     
     tBool=[tDefaults boolForKey:SHUserDefaultsMainDisplayOnly];
     
-    [_mainScreenCheckBox setState:(tBool==YES) ? NSOnState : NSOffState];
+    [_mainScreenCheckBox setState:(tBool==YES) ? NSControlStateValueOn : NSControlStateValueOff];
     
     [_assetsTableView reloadData];
 }
@@ -572,13 +573,23 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
 	[tOpenPanel setDelegate:self];
 	[tOpenPanel setCanChooseDirectories:YES];
 	[tOpenPanel setAllowsMultipleSelection:YES];
-	[tOpenPanel setAllowedFileTypes:[AVURLAsset audiovisualTypes]];
+	NSMutableArray * tContentTypes=[NSMutableArray arrayWithObject:UTTypeFolder];
+
+	for(NSString * tUTI in [AVURLAsset audiovisualTypes])
+	{
+		UTType * tType=[UTType typeWithIdentifier:tUTI];
+
+		if (tType!=nil)
+			[tContentTypes addObject:tType];
+	}
+
+	[tOpenPanel setAllowedContentTypes:tContentTypes];
 	[tOpenPanel setTitle:NSLocalizedStringFromTableInBundle(@"Add video or folder",@"Localized",[NSBundle bundleForClass:[self class]],@"")];
 	[tOpenPanel setPrompt:NSLocalizedStringFromTableInBundle(@"Add",@"Localized",[NSBundle bundleForClass:[self class]],@"")];
 	
 	NSInteger tResult=[tOpenPanel runModal];
 	
-	if (tResult==NSFileHandlingPanelOKButton)
+	if (tResult==NSModalResponseOK)
 	{
 		NSArray * tURLs=[tOpenPanel URLs];
 		NSMutableIndexSet * tMutableIndexSet=[NSMutableIndexSet indexSet];
@@ -648,7 +659,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
 
 - (IBAction)switchShowMetadata:(id)sender
 {
-    BOOL tBool=([sender state]==NSOnState);
+    BOOL tBool=([sender state]==NSControlStateValueOn);
     NSInteger tTag=[[_frameShowMetatadaModeMatrix selectedCell] tag];
     
     [_frameShowMetatadaModeMatrix setEnabled:tBool];
@@ -702,7 +713,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
 
 - (IBAction)closeDialog:(id)sender
 {
-    if ([sender tag]==NSOKButton)
+    if ([sender tag]==NSModalResponseOK)
     {
 #ifdef __TEST_SCREENSAVER__
         NSUserDefaults *tDefaults = [NSUserDefaults standardUserDefaults];
@@ -716,11 +727,11 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
         
             // Random Order
         
-        [tDefaults setBool:([_randomOrderCheckBox state]==NSOnState) forKey:SHUserDefaultsAssetsRandomOrder];
+        [tDefaults setBool:([_randomOrderCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsAssetsRandomOrder];
         
             // Start where left off
         
-        [tDefaults setBool:([_resumePlayingCheckBox state]==NSOnState) forKey:SHUserDefaultsAssetsStartWhereLeftOff];
+        [tDefaults setBool:([_resumePlayingCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsAssetsStartWhereLeftOff];
 
             // List
         
@@ -747,15 +758,15 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
         
             // Random Position
         
-        [tDefaults setBool:([_frameRandomPositionCheckBox state]==NSOnState) forKey:SHUserDefaultsFrameRandomPosition];
+        [tDefaults setBool:([_frameRandomPositionCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsFrameRandomPosition];
         
             // Draw Border
         
-        [tDefaults setBool:([_frameDrawBorderCheckBox state]==NSOnState) forKey:SHUserDefaultsFrameDrawBorder];
+        [tDefaults setBool:([_frameDrawBorderCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsFrameDrawBorder];
         
             // Show Metadata
         
-        [tDefaults setBool:([_frameShowMetatadaCheckBox state]==NSOnState) forKey:SHUserDefaultsFrameShowMetadata];
+        [tDefaults setBool:([_frameShowMetatadaCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsFrameShowMetadata];
         
             // Show Metadata mode
         
@@ -780,7 +791,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
         
         // Audio
         
-        [tDefaults setBool:([_audioMainScreenCheckBox state]==NSOnState) forKey:SHUserDefaultsAudioMainDisplayOnly];
+        [tDefaults setBool:([_audioMainScreenCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsAudioMainDisplayOnly];
         
         // Volume
         
@@ -793,14 +804,17 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
         
         // Main Screen Only
         
-        [tDefaults setBool:([_mainScreenCheckBox state]==NSOnState) forKey:SHUserDefaultsMainDisplayOnly];
+        [tDefaults setBool:([_mainScreenCheckBox state]==NSControlStateValueOn) forKey:SHUserDefaultsMainDisplayOnly];
         
         [tDefaults synchronize];
     }
     
     [_assetsTableView deselectAll:nil];
     
-    [NSApp endSheet:self.window];
+    if (self.window.sheetParent!=nil)
+        [self.window.sheetParent endSheet:self.window returnCode:NSModalResponseOK];
+    else
+        [NSApp endSheet:self.window];
 }
 
 #pragma mark - NSTableView DataSource
@@ -939,7 +953,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
     if (inTableView==_assetsTableView && inDropOperation==NSTableViewDropAbove)
     {
 		NSPasteboard * tPasteboard=[inDraggingInfo draggingPasteboard];
-		NSString * tPasteboardType=[tPasteboard availableTypeFromArray:@[SHPasteboardTypeSelectedRows,NSFilenamesPboardType]];
+		NSString * tPasteboardType=[tPasteboard availableTypeFromArray:@[SHPasteboardTypeSelectedRows,NSPasteboardTypeFileURL]];
         
         if ([tPasteboardType isEqualToString:SHPasteboardTypeSelectedRows]==YES)
         {
@@ -959,11 +973,11 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
             
             return NSDragOperationMove;
         }
-        else if ([tPasteboardType isEqualToString:NSFilenamesPboardType]==YES)
+        else if ([tPasteboardType isEqualToString:NSPasteboardTypeFileURL]==YES)
         {
             // Check whether the files can be accepted (same as Open panel in 2 steps)
             
-            NSArray * tFilesArray = [tPasteboard propertyListForType:NSFilenamesPboardType];
+            NSArray * tFilesArray = [[tPasteboard readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey:@(YES)}] valueForKey:@"path"];
             NSFileManager * tFileManager=[NSFileManager defaultManager];
             NSWorkspace * tSharedWorkspace=[NSWorkspace sharedWorkspace];
             NSArray * tAcceptedUTIsArray=[AVURLAsset audiovisualTypes];
@@ -1029,7 +1043,7 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
         NSMutableArray * tNewAssets=nil;
         
         NSPasteboard * tPasteboard=[inDraggingInfo draggingPasteboard];
-		NSString * tPasteboardType=[tPasteboard availableTypeFromArray:@[SHPasteboardTypeSelectedRows,NSFilenamesPboardType]];
+		NSString * tPasteboardType=[tPasteboard availableTypeFromArray:@[SHPasteboardTypeSelectedRows,NSPasteboardTypeFileURL]];
         
         if ([tPasteboardType isEqualToString:SHPasteboardTypeSelectedRows]==YES)
         {
@@ -1047,9 +1061,9 @@ NSString * const SHPasteboardTypeSelectedRows=@"savehollywood.pasterboardType.se
             
             [_cachedAssetsArray removeObjectsAtIndexes:_internalDragData];
         }
-        else if ([tPasteboardType isEqualToString:NSFilenamesPboardType]==YES)
+        else if ([tPasteboardType isEqualToString:NSPasteboardTypeFileURL]==YES)
         {
-            NSArray * tFilesArray = [tPasteboard propertyListForType:NSFilenamesPboardType];
+            NSArray * tFilesArray = [[tPasteboard readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey:@(YES)}] valueForKey:@"path"];
             NSFileManager * tFileManager=[NSFileManager defaultManager];
             
             tNewAssets=[NSMutableArray array];

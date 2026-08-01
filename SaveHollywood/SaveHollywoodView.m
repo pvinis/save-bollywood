@@ -30,7 +30,6 @@
 
 #define METADATA_DISPLAY_DURATION 5.0
 
-NSString * const SHScreenKey=@"screen#";
 NSString * const SHScreenKeyKeyed=@"screen.keyed#";
 NSString * const SHAssetTimeKey=@"asset.time";
 NSString * const SHAssetURLKey=@"asset.url";
@@ -70,10 +69,6 @@ NSUInteger random_no(NSUInteger n)
     SHMovieAudioVolumeMode _volumeMode;
     float _volumeLevel;
     
-	// Workaround for Apple bug in Sierra
-	
-	BOOL _useKeyedArchiverForLeftOffData;
-	
 	// Layers
     
     CALayer * _backgroundLayer;
@@ -151,21 +146,15 @@ NSUInteger random_no(NSUInteger n)
     
     if (self!=nil)
     {
-		SInt32 tMajorVersion,tMinorVersion,tBugFixVersion;
-		
-		Gestalt(gestaltSystemVersionMajor,&tMajorVersion);
-		Gestalt(gestaltSystemVersionMinor,&tMinorVersion);
-		Gestalt(gestaltSystemVersionBugFix,&tBugFixVersion);
-		
-		
-		_useKeyedArchiverForLeftOffData=(tMajorVersion>10 || (tMajorVersion==10 && tMinorVersion>=12));
-		
 		[self setAnimationTimeInterval:1.0];
         
         _fileManager=[NSFileManager defaultManager];
 		
-		_preview=isPreview;
-        
+		// The modern legacyScreenSaver host can pass isPreview=NO for the System Settings preview;
+		// a small frame is a preview regardless of the flag
+
+		_preview=(isPreview==YES || (frameRect.size.width<=400.0 && frameRect.size.height<=400.0));
+
         if (_preview==YES)
         {
             _mainScreen=YES;
@@ -184,6 +173,16 @@ NSUInteger random_no(NSUInteger n)
 #endif
 
 #pragma mark -
+
+- (void)viewDidMoveToWindow
+{
+	[super viewDidMoveToWindow];
+
+	// The modern legacyScreenSaver host does not always stop animation before discarding a view
+
+	if (self.window==nil)
+		[_AVPlayerLayer.player pause];
+}
 
 - (void)keyDown:(NSEvent *) inEvent
 {
@@ -259,17 +258,34 @@ NSUInteger random_no(NSUInteger n)
     NSArray * tScreensArray=[NSScreen screens];
     __block NSUInteger tFoundIndex=NSNotFound;
     
+    __block CGFloat tLargestArea=0.0;
+
     [tScreensArray enumerateObjectsUsingBlock:^(NSScreen * bScreen, NSUInteger bIndex, BOOL *bOutStop) {
-    
+
         NSRect tScreenFrame=[bScreen frame];
-        
+
         if (NSContainsRect(tScreenFrame,tWindowFrame)==YES)
         {
             tFoundIndex=bIndex;
             *bOutStop=YES;
+            return;
+        }
+
+        // The window of the modern legacyScreenSaver host does not always match the screen frame exactly
+
+        NSRect tIntersectionRect=NSIntersectionRect(tScreenFrame,tWindowFrame);
+        CGFloat tArea=tIntersectionRect.size.width*tIntersectionRect.size.height;
+
+        if (tArea>tLargestArea)
+        {
+            tLargestArea=tArea;
+            tFoundIndex=bIndex;
         }
     }];
-    
+
+    if (tFoundIndex==NSNotFound && [tScreensArray count]>0)
+        tFoundIndex=0;
+
     return tFoundIndex;
 }
 
@@ -284,8 +300,13 @@ NSUInteger random_no(NSUInteger n)
     ScreenSaverDefaults *tDefaults = [ScreenSaverDefaults defaultsForModuleWithName:tIdentifier];
 
 	SHSettings * tSettings=[SHSettings settings];
-	
+
 	[super startAnimation];
+
+	// Workaround for macOS 14+ bug where legacyScreenSaver is never told to stop after unlocking
+
+	if (_preview==NO)
+		[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(screenIsUnlocked:) name:@"com.apple.screenIsUnlocked" object:nil];
 #endif
     
 	BOOL tBool=tSettings.mainDisplayOnly;
@@ -489,12 +510,7 @@ NSUInteger random_no(NSUInteger n)
                         
                             if (tScreenIndex!=NSNotFound)
                             {
-								NSString * tScreenKey;
-								
-								if (_useKeyedArchiverForLeftOffData==YES)
-									tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKeyKeyed,(unsigned long)tScreenIndex];
-								else
-									tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKey,(unsigned long)tScreenIndex];
+								NSString * tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKeyKeyed,(unsigned long)tScreenIndex];
 								
 								if (tSettings.startWhereLeftOff==YES)
                                 {
@@ -502,10 +518,7 @@ NSUInteger random_no(NSUInteger n)
                                     
                                     if (tData!=nil)
                                     {
-										if (_useKeyedArchiverForLeftOffData==YES)
-											tLastKnownAssetDictionary=[NSKeyedUnarchiver unarchiveObjectWithData:tData];
-										else
-											tLastKnownAssetDictionary=[NSUnarchiver unarchiveObjectWithData:tData];
+										tLastKnownAssetDictionary=[NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class],[NSString class],[NSValue class],[NSURL class],nil] fromData:tData error:NULL];
                                         
                                         if (tLastKnownAssetDictionary==nil)
                                             NSLog(@"Error when unarchiving last known asset for %@",tScreenKey);
@@ -598,12 +611,7 @@ NSUInteger random_no(NSUInteger n)
         
         if (tScreenIndex!=NSNotFound)
         {
-			NSString * tScreenKey;
-			
-			if (_useKeyedArchiverForLeftOffData==YES)
-				tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKeyKeyed,(unsigned long)tScreenIndex];
-			else
-				tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKey,(unsigned long)tScreenIndex];
+			NSString * tScreenKey=[NSString stringWithFormat:@"%@%lu",SHScreenKeyKeyed,(unsigned long)tScreenIndex];
             
             if (tSettings.startWhereLeftOff==YES)
             {
@@ -617,15 +625,13 @@ NSUInteger random_no(NSUInteger n)
 					NSDictionary * tLastAssetDictionary=@{SHAssetTimeKey:tValue,
 														  SHAssetURLKey:tCurrentURL};
 					
-					NSData * tData=nil;
-					
-					if (_useKeyedArchiverForLeftOffData==YES)
-						tData=[NSKeyedArchiver archivedDataWithRootObject:tLastAssetDictionary];
-                    else
-						tData=[NSArchiver archivedDataWithRootObject:tLastAssetDictionary];
-						
+					NSError * tError=nil;
+					NSData * tData=[NSKeyedArchiver archivedDataWithRootObject:tLastAssetDictionary requiringSecureCoding:YES error:&tError];
+
                     if (tData!=nil)
                         [tDefaults setObject:tData forKey:tScreenKey];
+                    else
+                        NSLog(@"SaveHollywood: error when archiving last known asset: %@",tError);
                 }
             }
             else
@@ -670,8 +676,23 @@ NSUInteger random_no(NSUInteger n)
     _volumeLevelHasBeenModified=NO;
     
 #ifndef __TEST_SCREENSAVER__
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.apple.screenIsUnlocked" object:nil];
+
     [super stopAnimation];
 #endif
+}
+
+- (void)screenIsUnlocked:(NSNotification *)inNotification
+{
+    // Workaround for macOS 14+ bug where legacyScreenSaver keeps running after unlocking
+
+    if (_preview==YES)
+        return;
+
+    if ([self isAnimating]==YES)
+        [self stopAnimation];
+
+    exit(0);
 }
 
 - (BOOL)playNextAsset:(NSDictionary *)preferredNextAssetDictionary canPlaySameRandomMovieTwice:(BOOL)inCanPlaySameRandomMovieTwice
@@ -914,7 +935,7 @@ NSUInteger random_no(NSUInteger n)
             
         default:
             
-            if (_audioMainScreen==NO || _mainScreen==YES)
+            if (_preview==NO && (_audioMainScreen==NO || _mainScreen==YES))
             {
                 _AVPlayerLayer.player.volume=(_liveMuted==YES) ? 0.0f :_volumeLevel;
             }
