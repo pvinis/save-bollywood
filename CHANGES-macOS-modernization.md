@@ -97,6 +97,17 @@ to screen 0.
 
 Volume is now only applied when `_preview == NO`; preview playback is always muted.
 
+### 3.9 Main-display detection broken on multi-display setups (`SaveHollywoodView.m`)
+
+`_mainScreen` was decided at init time from the frame origin (`NSMinX/NSMinY == 0`),
+which assumed saver windows use global screen coordinates. The modern host gives every
+display's view a zero origin, so every instance considered itself the main display. This
+broke both "Main display only" and "Play audio only on main display": every display played
+video with its own audio stream, and the independent players drifted out of sync.
+`_mainScreen` is now re-evaluated in `startAnimation` (when the window exists) by
+comparing `self.window.screen` against `[NSScreen screens].firstObject` (the primary
+display), with a largest-intersection `screenIndex` fallback.
+
 ## 4. Known remaining deprecation warnings (functional, left as-is)
 
 * `-[AVAsset naturalSize]` (`SaveHollywoodView.m`) — the suggested replacement

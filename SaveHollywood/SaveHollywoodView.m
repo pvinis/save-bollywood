@@ -306,9 +306,19 @@ NSUInteger random_no(NSUInteger n)
 	// Workaround for macOS 14+ bug where legacyScreenSaver is never told to stop after unlocking
 
 	if (_preview==NO)
+	{
 		[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(screenIsUnlocked:) name:@"com.apple.screenIsUnlocked" object:nil];
+
+		// The frame origin heuristic used at init time fails in the modern legacyScreenSaver host
+		// where every view has a zero origin; determine the actual screen now that the window exists
+
+		if (self.window.screen!=nil)
+			_mainScreen=(self.window.screen==[NSScreen screens].firstObject);
+		else if (self.window!=nil)
+			_mainScreen=([self screenIndex]==0);
+	}
 #endif
-    
+
 	BOOL tBool=tSettings.mainDisplayOnly;
     
     if (tBool==NO || _mainScreen==YES)
