@@ -1,0 +1,13 @@
+"%ld seconds" = "%ld secondes";
+
+"Add video or folder" = "Ajouter une vidéo ou un dossier";
+
+"Add" = "Ajouter";
+
+"Version %@ (%@)" = "Version %@ (%@)";
+
+"Legal terms" = "Copyright © 2001-%ld Stéphane Sudre\nTous droits réservés.";
+
+"No videos" = "Aucune vidéo";
+
+"No readable videos" = "Aucune vidéo lisible\nmacOS bloque peut-être ce dossier. Ajoutez à nouveau les vidéos dans Options, ou déplacez-les dans /Users/Shared.";
