@@ -1,0 +1,12 @@
+[tasks.build]
+description = "Build SaveBollywood.saver into ./build/Release"
+run = 'xcodebuild -project SaveBollywood.xcodeproj -target SaveBollywood -configuration Release SYMROOT="$PWD/build" OBJROOT="$PWD/build/obj" build'
+
+[tasks.install]
+description = "Build, then copy the saver into ~/Library/Screen Savers"
+depends = ["build"]
+run = [
+  'rm -rf "$HOME/Library/Screen Savers/SaveBollywood.saver"',
+  'ditto build/Release/SaveBollywood.saver "$HOME/Library/Screen Savers/SaveBollywood.saver"',
+  'killall legacyScreenSaver 2>/dev/null || true',
+]
