@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>10</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2013-2018 WhiteBox (SaveHollywood). SaveBollywood changes © 2026 Pavlos Vinieratos.</string>
+	<string>Copyright © 2026 Pavlos Vinieratos. Based on SaveHollywood, Copyright © 2001-2024 Stéphane Sudre.</string>
 	<key>NSPrincipalClass</key>
 	<string>SaveBollywoodView</string>
 	<key>NSRequiresAquaSystemAppearance</key>
