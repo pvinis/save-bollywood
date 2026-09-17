@@ -9,4 +9,8 @@ run = [
   'rm -rf "$HOME/Library/Screen Savers/SaveBollywood.saver"',
   'ditto build/Release/SaveBollywood.saver "$HOME/Library/Screen Savers/SaveBollywood.saver"',
   'killall legacyScreenSaver 2>/dev/null || true',
+  # System Settings gets the saver list and thumbnails from this extension. It caches the thumbnails on disk
+  # and never refreshes them, so clear its cache (macOS regenerates it) and restart it
+  'rm -rf "$(getconf DARWIN_USER_CACHE_DIR)com.apple.wallpaper.extension.legacy/com.apple.wallpaper.legacy.thumbnails"',
+  'killall WallpaperLegacyExtension 2>/dev/null || true',
 ]
