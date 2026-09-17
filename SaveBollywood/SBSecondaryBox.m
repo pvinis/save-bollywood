@@ -29,7 +29,10 @@
 	else
 		[[NSColor colorWithDeviceWhite:0.0 alpha:0.15] set];
 	
-	NSRectFillUsingOperation(dirtyRect,NSCompositingOperationSourceOver);
+	// Since macOS 14, views do not clip to their bounds and dirtyRect can extend beyond them:
+	// filling dirtyRect would paint over the sibling views
+	
+	NSRectFillUsingOperation(NSIntersectionRect(dirtyRect,[self bounds]),NSCompositingOperationSourceOver);
 	
 	[[NSColor colorWithDeviceWhite:0.0 alpha:0.10] set];
 	
