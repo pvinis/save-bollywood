@@ -13,6 +13,8 @@
 
 #import "SBAboutBoxWindowController.h"
 
+#define SBFirstCopyrightYear 2026
+
 @interface SBAboutBoxWindowController ()
 {
     IBOutlet NSTextField *_versionLabel;
@@ -37,7 +39,12 @@
     
     _versionLabel.stringValue=[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Version %@ (%@)",@"Localized",tBundle,@""),tInfoDictionary[@"CFBundleShortVersionString"],tInfoDictionary[@"CFBundleVersion"]];
     
-    _copyrightLabel.stringValue=[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Legal terms",@"Localized",tBundle,@""),(long)[[NSCalendar currentCalendar] component:NSCalendarUnitYear fromDate:[NSDate date]]];
+    // Years of the SaveBollywood changes: "2026", then "2026-<current year>"
+    
+    NSInteger tCurrentYear=[[NSCalendar currentCalendar] component:NSCalendarUnitYear fromDate:[NSDate date]];
+    NSString * tYears=(tCurrentYear>SBFirstCopyrightYear) ? [NSString stringWithFormat:@"%ld-%ld",(long)SBFirstCopyrightYear,(long)tCurrentYear] : [NSString stringWithFormat:@"%ld",(long)SBFirstCopyrightYear];
+    
+    _copyrightLabel.stringValue=[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Legal terms",@"Localized",tBundle,@""),tYears];
 }
 
 @end

@@ -24,3 +24,11 @@ macOS runs third-party screen savers in a sandboxed host (`legacyScreenSaver`) t
 - Security-scoped bookmarks for the configured videos and folders.
 
 The code still uses manual reference counting.
+
+## Credits
+
+- Pavlos Vinieratos: SaveBollywood.
+- [Stéphane Sudre](http://s.sudre.free.fr/Software/SaveHollywood/about.html): the original SaveHollywood.
+- [miikememe](https://github.com/miikememe): the fixes for current macOS from [PR #29](https://github.com/packagesdev/savehollywood/pull/29).
+
+Licensed under the BSD 3-Clause license, see `LICENSE`.

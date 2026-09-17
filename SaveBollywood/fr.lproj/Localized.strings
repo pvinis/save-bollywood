@@ -6,7 +6,7 @@
 
 "Version %@ (%@)" = "Version %@ (%@)";
 
-"Legal terms" = "Copyright © 2001-%ld Stéphane Sudre\nTous droits réservés.";
+"Legal terms" = "Copyright © %@ Pavlos Vinieratos\nBasé sur SaveHollywood\nCopyright © 2001-2024 Stéphane Sudre\nAvec des correctifs macOS de miikememe\nTous droits réservés.";
 
 "No videos" = "Aucune vidéo";
 
