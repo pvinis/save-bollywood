@@ -1,6 +1,8 @@
 SaveBollywood
 =============
 
+<p align="center"><img src="design/logo.png" width="240" alt="A cinema ticket reading BOLLY"></p>
+
 A video screen saver for macOS 26+. It plays your own movie files as a screen saver.
 
 This is a fork of [SaveHollywood](https://github.com/packagesdev/savehollywood) by Stéphane Sudre, which is no longer maintained and only ships as an Intel binary. It builds on the fixes from [miikememe's PR #29](https://github.com/packagesdev/savehollywood/pull/29). It uses its own bundle identifier (`com.pvinis.SaveBollywood`) and class names, so it can be installed next to the original.
