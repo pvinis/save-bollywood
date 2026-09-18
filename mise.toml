@@ -10,3 +10,11 @@ run = [
   'ditto build/Release/SaveBollywood.saver "$HOME/Library/Screen Savers/SaveBollywood.saver"',
   'killall legacyScreenSaver 2>/dev/null || true',
 ]
+
+[tasks.release]
+description = "Build a Developer ID signed, notarized zip into ./build"
+run = 'sh scripts/release.sh'
+
+[tasks.publish]
+description = "Tag v<version> and create the GitHub release from the zip"
+run = 'sh scripts/publish.sh'

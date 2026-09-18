@@ -5,11 +5,24 @@ A video screen saver for macOS 26+. It plays your own movie files as a screen sa
 
 This is a fork of [SaveHollywood](https://github.com/packagesdev/savehollywood) by Stéphane Sudre, which is no longer maintained and only ships as an Intel binary. It builds on the fixes from [miikememe's PR #29](https://github.com/packagesdev/savehollywood/pull/29). It uses its own bundle identifier (`com.pvinis.SaveBollywood`) and class names, so it can be installed next to the original.
 
-## Build and install
+## Install
+
+	brew install --cask pvinis/pvinis/savebollywood
+
+Then pick SaveBollywood in System Settings > Wallpaper > Screen Saver. Or download `SaveBollywood-<version>.zip` from the [releases](https://github.com/pvinis/savebollywood/releases), unzip it and double-click the saver.
+
+## Build from source
 
 	mise run install
 
-or build with `mise run build` and double-click `build/Release/SaveBollywood.saver`. Then pick SaveBollywood in System Settings > Wallpaper > Screen Saver.
+or build with `mise run build` and double-click `build/Release/SaveBollywood.saver`.
+
+## Release
+
+	mise run release
+	mise run publish
+
+`release` builds with Developer ID signing, notarizes and staples the saver and zips it into `build/`. `publish` tags `v<version>`, creates the GitHub release with the zip and prints the values for the cask in [pvinis/homebrew-pvinis](https://github.com/pvinis/homebrew-pvinis). The version comes from `CFBundleShortVersionString` in `SaveBollywood-Info.plist`.
 
 ## Where to put videos
 
@@ -17,7 +30,7 @@ macOS runs third-party screen savers in a sandboxed host (`legacyScreenSaver`) t
 
 ## Changes from SaveHollywood 2.6
 
-- Universal build, macOS 26 minimum, ad-hoc signed, no deprecated API left.
+- Universal build, macOS 26 minimum, notarized releases, no deprecated API left.
 - Open panel, drag and drop, and closing the Options sheet work in System Settings again.
 - The host process exits shortly after the saver is dismissed (`com.apple.screensaver.willstop` and `com.apple.screenIsUnlocked`), so audio no longer keeps playing in the background.
 - Previews are always muted; main display detection and resume-where-left-off work with the modern host.
