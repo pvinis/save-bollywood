@@ -14,6 +14,7 @@
 		F40427DF169B76CB00B146F7 /* SaveBollywoodView.m in Sources */ = {isa = PBXBuildFile; fileRef = F40427DE169B76CB00B146F7 /* SaveBollywoodView.m */; };
 		F405C93016DC01D700EFDF39 /* SBTokenView.h in Headers */ = {isa = PBXBuildFile; fileRef = F405C92E16DC01D700EFDF39 /* SBTokenView.h */; };
 		F405C93116DC01D700EFDF39 /* SBTokenView.m in Sources */ = {isa = PBXBuildFile; fileRef = F405C92F16DC01D700EFDF39 /* SBTokenView.m */; };
+		5B00000126C0000000000005 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5B00000126C0000000000006 /* LICENSE */; };
 		F4066EA7170760EA00EBE7D0 /* thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = F4066EA5170760EA00EBE7D0 /* thumbnail.png */; };
 		F4066EA8170760EA00EBE7D0 /* thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F4066EA6170760EA00EBE7D0 /* thumbnail@2x.png */; };
 		F40B998B16AB1F6200644F61 /* NSColor+String.h in Headers */ = {isa = PBXBuildFile; fileRef = F40B998916AB1F6200644F61 /* NSColor+String.h */; };
@@ -62,6 +63,7 @@
 		F40427DE169B76CB00B146F7 /* SaveBollywoodView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaveBollywoodView.m; sourceTree = "<group>"; };
 		F405C92E16DC01D700EFDF39 /* SBTokenView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBTokenView.h; sourceTree = "<group>"; };
 		F405C92F16DC01D700EFDF39 /* SBTokenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBTokenView.m; sourceTree = "<group>"; };
+		5B00000126C0000000000006 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F4066EA5170760EA00EBE7D0 /* thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thumbnail.png; sourceTree = "<group>"; };
 		F4066EA6170760EA00EBE7D0 /* thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbnail@2x.png"; sourceTree = "<group>"; };
 		F40B998916AB1F6200644F61 /* NSColor+String.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+String.h"; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				F40427D6169B76CB00B146F7 /* SaveBollywood */,
+				5B00000126C0000000000006 /* LICENSE */,
 				F40427CD169B76CB00B146F7 /* Frameworks */,
 				F40427CC169B76CB00B146F7 /* Products */,
 			);
@@ -297,6 +300,7 @@
 				F434961B16B701B500C549DF /* Localized.strings in Resources */,
 				F4DD2AA016FDBF30002A555F /* SBConfigurationWindowController.xib in Resources */,
 				F4DD2AA516FDBF73002A555F /* SBAboutBoxWindowController.xib in Resources */,
+				5B00000126C0000000000005 /* LICENSE in Resources */,
 				F4066EA7170760EA00EBE7D0 /* thumbnail.png in Resources */,
 				F4066EA8170760EA00EBE7D0 /* thumbnail@2x.png in Resources */,
 			);
@@ -360,6 +364,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
+				ENABLE_HARDENED_RUNTIME = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -389,6 +394,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
+				ENABLE_HARDENED_RUNTIME = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;

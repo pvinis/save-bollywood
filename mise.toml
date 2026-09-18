@@ -14,3 +14,11 @@ run = [
   'rm -rf "$(getconf DARWIN_USER_CACHE_DIR)com.apple.wallpaper.extension.legacy/com.apple.wallpaper.legacy.thumbnails"',
   'killall WallpaperLegacyExtension 2>/dev/null || true',
 ]
+
+[tasks.release]
+description = "Build a Developer ID signed, notarized zip into ./build"
+run = 'sh scripts/release.sh'
+
+[tasks.publish]
+description = "Tag v<version> and create the GitHub release from the zip"
+run = 'sh scripts/publish.sh'
