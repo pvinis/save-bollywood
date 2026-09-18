@@ -7,9 +7,9 @@ This is a fork of [SaveHollywood](https://github.com/packagesdev/savehollywood) 
 
 ## Install
 
-	brew install --cask pvinis/pvinis/savebollywood
+	brew install --cask pvinis/pvinis/save-bollywood
 
-Then pick SaveBollywood in System Settings > Wallpaper > Screen Saver. Or download `SaveBollywood-<version>.zip` from the [releases](https://github.com/pvinis/savebollywood/releases), unzip it and double-click the saver.
+Then pick SaveBollywood in System Settings > Wallpaper > Screen Saver. Or download `SaveBollywood-<version>.zip` from the [releases](https://github.com/pvinis/save-bollywood/releases), unzip it and double-click the saver.
 
 ## Build from source
 
