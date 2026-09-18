@@ -21,7 +21,8 @@ git tag -a "$TAG" -m "SaveBollywood $VERSION"
 git push origin "$TAG"
 
 echo "==> Creating release"
-gh release create "$TAG" "$ZIP" --title "SaveBollywood $VERSION" --generate-notes
+# Explicit repo: this is a fork, and gh would otherwise pick the upstream.
+gh release create "$TAG" "$ZIP" --repo pvinis/savebollywood --title "SaveBollywood $VERSION" --generate-notes
 
 echo "==> Cask values"
 echo "version \"$VERSION\""
